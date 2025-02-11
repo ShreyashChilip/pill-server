@@ -16,7 +16,7 @@ const db = new sqlite3.Database('./time_db.db', (err) => {
     } else {
         db.run(`CREATE TABLE IF NOT EXISTS time_info (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            date INTEGER, 
+            d INTEGER, 
             month INTEGER, 
             year INTEGER, 
             hours INTEGER, 
@@ -26,15 +26,15 @@ const db = new sqlite3.Database('./time_db.db', (err) => {
 
 // Route to set the time
 app.post('/set_time', (req, res) => {
-    const { date, month, year, hours, minutes } = req.body;
+    const { d, month, year, hours, minutes } = req.body;
 
-    if (![date, month, year, hours, minutes].every(Number.isInteger)) {
+    if (![d, month, year, hours, minutes].every(Number.isInteger)) {
         return res.status(400).json({ message: 'Invalid input. All fields must be integers.' });
     }
 
     // Insert the time into the database
-    const stmt = db.prepare(`INSERT INTO time_info (date, month, year, hours, minutes) VALUES (?, ?, ?, ?, ?)`);
-    stmt.run(date, month, year, hours, minutes, function(err) {
+    const stmt = db.prepare(`INSERT INTO time_info (d, month, year, hours, minutes) VALUES (?, ?, ?, ?, ?)`);
+    stmt.run(d, month, year, hours, minutes, function(err) {
         if (err) {
             return res.status(500).json({ message: 'Error setting time.', error: err });
         }
@@ -44,7 +44,7 @@ app.post('/set_time', (req, res) => {
 
 // Route to get the time
 app.get('/get_time', (req, res) => {
-    db.get(`SELECT date, month, year, hours, minutes FROM time_info ORDER BY id DESC LIMIT 1`, (err, row) => {
+    db.get(`SELECT d, month, year, hours, minutes FROM time_info ORDER BY id DESC LIMIT 1`, (err, row) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching time.', error: err });
         }
@@ -52,7 +52,7 @@ app.get('/get_time', (req, res) => {
             return res.status(404).json({ message: 'No time found in the database.' });
         }
         res.status(200).json({
-            date: row.date,
+            d: row.d,
             month: row.month,
             year: row.year,
             hours: row.hours,
