@@ -28,10 +28,6 @@ const db = new sqlite3.Database('./time_db.db', (err) => {
 app.post('/set_time', (req, res) => {
     const { d, month, year, hours, minutes } = req.body;
 
-    if (![d, month, year, hours, minutes].every(Number.isInteger)) {
-        return res.status(400).json({ message: 'Invalid input. All fields must be integers.' });
-    }
-
     // Insert the time into the database
     const stmt = db.prepare(`INSERT INTO time_info (d, month, year, hours, minutes) VALUES (?, ?, ?, ?, ?)`);
     stmt.run(d, month, year, hours, minutes, function(err) {
