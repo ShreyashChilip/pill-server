@@ -26,17 +26,29 @@ const db = new sqlite3.Database('./time_db.db', (err) => {
 
 // Route to set the time
 app.post('/set_time', (req, res) => {
+    // Explicitly convert to integers
     const { d, month, year, hours, minutes } = req.body;
+    const intD = parseInt(d, 10);
+    const intMonth = parseInt(month, 10);
+    const intYear = parseInt(year, 10);
+    const intHours = parseInt(hours, 10);
+    const intMinutes = parseInt(minutes, 10);
+
+    // Check if all values are valid integers
+    if (![intD, intMonth, intYear, intHours, intMinutes].every(Number.isInteger)) {
+        return res.status(400).json({ message: 'Invalid input. All fields must be integers.' });
+    }
 
     // Insert the time into the database
     const stmt = db.prepare(`INSERT INTO time_info (d, month, year, hours, minutes) VALUES (?, ?, ?, ?, ?)`);
-    stmt.run(d, month, year, hours, minutes, function(err) {
+    stmt.run(intD, intMonth, intYear, intHours, intMinutes, function(err) {
         if (err) {
             return res.status(500).json({ message: 'Error setting time.', error: err });
         }
         res.status(200).json({ message: 'Time set successfully' });
     });
 });
+
 
 // Route to get the time
 app.get('/get_time', (req, res) => {
