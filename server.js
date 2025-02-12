@@ -24,19 +24,19 @@ const db = new sqlite3.Database('./time_db.db', (err) => {
     }
 });
 
-// Route to set the time
 app.post('/set_time', (req, res) => {
     const { d, month, year, hours, minutes } = req.body;
 
-    // Ensure all values exist and are valid integers
+    // Check if all fields are present
+    if (d === undefined || month === undefined || year === undefined || hours === undefined || minutes === undefined) {
+        return res.status(400).json({ message: 'Missing fields. All fields (d, month, year, hours, minutes) are required.' });
+    }
+
+    // Ensure all values are valid integers
     if (
-        !Number.isInteger(+d) ||
-        !Number.isInteger(+month) ||
-        !Number.isInteger(+year) ||
-        !Number.isInteger(+hours) ||
-        !Number.isInteger(+minutes)
+        isNaN(d) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)
     ) {
-        return res.status(400).json({ message: 'Invalid input. All fields must be integers.' });
+        return res.status(400).json({ message: 'Invalid input. All fields must be numbers.' });
     }
 
     const intD = parseInt(d, 10);
@@ -54,7 +54,6 @@ app.post('/set_time', (req, res) => {
         res.status(200).json({ message: 'Time set successfully' });
     });
 });
-
 
 
 // Route to get the time
