@@ -44,7 +44,11 @@ app.post('/set_time', (req, res) => {
     const intYear = parseInt(year, 10);
     const intHours = parseInt(hours, 10);
     const intMinutes = parseInt(minutes, 10);
-
+    console.log(intD);
+    console.log(intMonth);
+    console.log(intYear);
+    console.log(intHours);
+    console.log(intMinutes);
     // Insert the time into the database
     const stmt = db.prepare(`INSERT INTO time_info (d, month, year, hours, minutes) VALUES (?, ?, ?, ?, ?)`);
     stmt.run(intD, intMonth, intYear, intHours, intMinutes, function (err) {
