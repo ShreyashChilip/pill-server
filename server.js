@@ -31,8 +31,16 @@ app.post('/set_time', (req, res) => {
     if (!d || !month || !year || !hours || !minutes) {
         return res.status(400).json({ error: 'All fields are required' });
     }
-
+    const queryDelete = 'truncate table time_data;'
+    db.run(queryDelete, function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ id: this.lastID });
+    });
     const query = `INSERT INTO time_data (date, month, year, hours, minutes) VALUES (?, ?, ?, ?, ?)`;
+
+
     db.run(query, [d, month, year, hours, minutes], function(err) {
         if (err) {
             return res.status(500).json({ error: err.message });
